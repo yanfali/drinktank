@@ -6,10 +6,10 @@ define([
 ], function (_, Backbone) {
     'use strict';
 
-    var ApplicationModel = Backbone.Model.extend({
+    var Tweet = Backbone.Model.extend({
         defaults: {
         }
     });
 
-    return ApplicationModel;
+    return Tweet;
 });

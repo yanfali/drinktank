@@ -87,6 +87,9 @@ $shadow-color: #888;
 .cc {
 	text-align: center;
 }
+.timesince {
+	float: right;
+}
 @mixin keyframes-revealX($prefix, $start, $dest) {
         0% { #{$prefix}transform: translateX(#{$start}); opacity: 0;}
         100% { #{$prefix}transform: translateX(#{$dest}); opacity: 1;}
