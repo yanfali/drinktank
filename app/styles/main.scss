@@ -32,7 +32,6 @@ $shadow-color: #888;
 .avatar {
 	height: 48px;
 	width: 48px;
-	border-radius: 5px;
 }
 .well {
 	padding: 19px 8px 19px 8px;
@@ -76,4 +75,49 @@ $shadow-color: #888;
 }
 .cc {
 	text-align: center;
+}
+@mixin keyframes-slide($prefix: '') {
+        100% { #{$prefix}transform: translateX(500px); opacity: 1.0;}
+        100% { #{$prefix}transform: translateX(500px); opacity: 0;}
+}
+@-webkit-keyframes slide {
+        @include keyframes-slide(-webkit-)
+}
+@-moz-keyframes slide {
+        @include keyframes-slide(-moz-)
+}
+@-o-keyframes slide {
+        @include keyframes-slide(-o-)
+}
+@keyframes slide {
+        @include keyframes-slide()
+}
+@mixin transform-origin($x: '', $y: '', $z: '') {
+        -webkit-transform-origin: #{$x} #{$y} #{$z};
+        -moz-transform-origin: #{$x} #{$y} #{$z};
+        -o-transform-origin: #{$x} #{$y} #{$z};
+        transform-origin: #{$x} #{$y} #{$z};
+}
+@mixin animation-name($name) {
+        -webkit-animation-name: #{$name};
+        -moz-animation-name: #{$name};
+        -o-animation-name: #{$name};
+        animation-name: #{$name};
+}
+.slide {
+        @include transform-origin(center, center);
+        @include animation-name(slide);
+}
+@mixin animation-params($prefix, $duration, $delay, $timing, $fillmode) {
+        #{$prefix}animation-duration: #{$duration};
+        #{$prefix}animation-delay: #{$delay};
+        #{$prefix}animation-timing-function: #{$timing};
+        #{$prefix}animation-fill-mode: #{$fillmode};
+}
+$anim-duration: 2.0s;
+.animate0{
+        @include animation-params(-webkit-, $anim-duration, 0s, ease-in, both);
+        @include animation-params(-moz-, $anim-duration, 0s, ease-in, both);
+        @include animation-params(-ms-, $anim-duration, 0s, ease-in, both);
+        @include animation-params('', $anim-duration, 0s, ease-in, both);
 }
