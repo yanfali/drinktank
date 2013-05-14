@@ -1,8 +1,14 @@
 'use strict';
 var lrSnippet = require('grunt-contrib-livereload/lib/utils').livereloadSnippet;
-var mountFolder = function (connect, dir) {
-    return connect.static(require('path').resolve(dir));
-};
+var mountFolder = function(connect, dir) {
+        return connect.static(require('path').resolve(dir));
+    };
+var corsMiddleware = function(req, res, next) {
+        res.setHeader('Access-Control-Allow-Origin', '*');
+        res.setHeader('Access-Control-Allow-Methods', 'GET');
+        res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+        next();
+    };
 
 // # Globbing
 // for performance reasons we're only matching one level down:
@@ -10,8 +16,7 @@ var mountFolder = function (connect, dir) {
 // use this if you want to match all subfolders:
 // 'test/spec/**/*.js'
 // templateFramework: 'lodash'
-
-module.exports = function (grunt) {
+module.exports = function(grunt) {
     // load all grunt tasks
     require('matchdep').filterDev('grunt-*').forEach(grunt.loadNpmTasks);
 
@@ -37,18 +42,11 @@ module.exports = function (grunt) {
                 tasks: ['compass']
             },
             livereload: {
-                files: [
-                    '<%= yeoman.app %>/*.html',
-                    '{.tmp,<%= yeoman.app %>}/styles/{,*/}*.css',
-                    '{.tmp,<%= yeoman.app %>}/scripts/{,*/}*.js',
-                    '<%= yeoman.app %>/images/{,*/}*.{png,jpg,jpeg,gif,webp}'
-                ],
+                files: ['<%= yeoman.app %>/*.html', '{.tmp,<%= yeoman.app %>}/styles/{,*/}*.css', '{.tmp,<%= yeoman.app %>}/scripts/{,*/}*.js', '<%= yeoman.app %>/images/{,*/}*.{png,jpg,jpeg,gif,webp}'],
                 tasks: ['livereload']
             },
             jst: {
-                files: [
-                    '<%= yeoman.app %>/scripts/templates/*.ejs'
-                ],
+                files: ['<%= yeoman.app %>/scripts/templates/*.ejs'],
                 tasks: ['jst']
             }
         },
@@ -60,31 +58,25 @@ module.exports = function (grunt) {
             },
             livereload: {
                 options: {
-                    middleware: function (connect) {
+                    middleware: function(connect) {
                         return [
-                            lrSnippet,
-                            mountFolder(connect, '.tmp'),
-                            mountFolder(connect, 'app')
-                        ];
+                        corsMiddleware, lrSnippet, mountFolder(connect, '.tmp'), mountFolder(connect, 'app')];
                     }
                 }
             },
             test: {
                 options: {
-                    middleware: function (connect) {
+                    middleware: function(connect) {
                         return [
-                            mountFolder(connect, '.tmp'),
-                            mountFolder(connect, 'test')
-                        ];
+                        corsMiddleware, mountFolder(connect, '.tmp'), mountFolder(connect, 'test')];
                     }
                 }
             },
             dist: {
                 options: {
-                    middleware: function (connect) {
+                    middleware: function(connect) {
                         return [
-                            mountFolder(connect, 'dist')
-                        ];
+                        corsMiddleware, mountFolder(connect, 'dist')];
                     }
                 }
             }
@@ -102,12 +94,7 @@ module.exports = function (grunt) {
             options: {
                 jshintrc: '.jshintrc'
             },
-            all: [
-                'Gruntfile.js',
-                '<%= yeoman.app %>/scripts/{,*/}*.js',
-                '!<%= yeoman.app %>/scripts/vendor/*',
-                'test/spec/{,*/}*.js'
-            ]
+            all: ['Gruntfile.js', '<%= yeoman.app %>/scripts/{,*/}*.js', '!<%= yeoman.app %>/scripts/vendor/*', 'test/spec/{,*/}*.js']
         },
         mocha: {
             all: {
@@ -203,10 +190,7 @@ module.exports = function (grunt) {
         cssmin: {
             dist: {
                 files: {
-                    '<%= yeoman.dist %>/styles/main.css': [
-                        '.tmp/styles/{,*/}*.css',
-                        '<%= yeoman.app %>/styles/{,*/}*.css'
-                    ]
+                    '<%= yeoman.dist %>/styles/main.css': ['.tmp/styles/{,*/}*.css', '<%= yeoman.app %>/styles/{,*/}*.css']
                 }
             }
         },
@@ -238,11 +222,7 @@ module.exports = function (grunt) {
                     dot: true,
                     cwd: '<%= yeoman.app %>',
                     dest: '<%= yeoman.dist %>',
-                    src: [
-                        '*.{ico,txt}',
-                        '.htaccess',
-                        'images/{,*/}*.{webp,gif}'
-                    ]
+                    src: ['*.{ico,txt}', '.htaccess', 'images/{,*/}*.{webp,gif}']
                 }]
             }
         },
@@ -265,58 +245,21 @@ module.exports = function (grunt) {
 
     grunt.renameTask('regarde', 'watch');
 
-    grunt.registerTask('createDefaultTemplate', function () {
+    grunt.registerTask('createDefaultTemplate', function() {
         grunt.file.write('.tmp/scripts/templates.js', 'this.JST = this.JST || {};');
     });
 
-    grunt.registerTask('server', function (target) {
+    grunt.registerTask('server', function(target) {
         if (target === 'dist') {
             return grunt.task.run(['build', 'open', 'connect:dist:keepalive']);
         }
 
-        grunt.task.run([
-            'clean:server',
-            'coffee:dist',
-            'createDefaultTemplate',
-            'jst',
-            'compass:server',
-            'livereload-start',
-            'connect:livereload',
-            'open',
-            'watch'
-        ]);
+        grunt.task.run(['clean:server', 'coffee:dist', 'createDefaultTemplate', 'jst', 'compass:server', 'livereload-start', 'connect:livereload', 'open', 'watch']);
     });
 
-    grunt.registerTask('test', [
-        'clean:server',
-        'coffee',
-        'createDefaultTemplate',
-        'jst',
-        'compass',
-        'connect:test',
-        'mocha'
-    ]);
+    grunt.registerTask('test', ['clean:server', 'coffee', 'createDefaultTemplate', 'jst', 'compass', 'connect:test', 'mocha']);
 
-    grunt.registerTask('build', [
-        'clean:dist',
-        'coffee',
-        'createDefaultTemplate',
-        'jst',
-        'compass:dist',
-        'useminPrepare',
-        'requirejs',
-        'imagemin',
-        'htmlmin',
-        'concat',
-        'cssmin',
-        'uglify',
-        'copy',
-        'usemin'
-    ]);
+    grunt.registerTask('build', ['clean:dist', 'coffee', 'createDefaultTemplate', 'jst', 'compass:dist', 'useminPrepare', 'requirejs', 'imagemin', 'htmlmin', 'concat', 'cssmin', 'uglify', 'copy', 'usemin']);
 
-    grunt.registerTask('default', [
-        'jshint',
-        'test',
-        'build'
-    ]);
+    grunt.registerTask('default', ['jshint', 'test', 'build']);
 };
