@@ -1,13 +1,15 @@
 @import 'sass-bootstrap/lib/bootstrap';
 
 .brand {
-	font-family: 'Gloria Hallelujah', cursive;
+	font-family: 'Noto-Sans', sans-serif;
 }
 h2 {
-	font-family: 'Gloria Hallelujah', cursive;
+	font-family: 'Noto-Sans', sans-serif;
 	text-align: center;
 }
 
+	//font-family: 'Oxygen', sans-serif;
+	//font-family: 'Cousine', sans-serif;
 $shadow-color: #888;
 
 .coke, .pepsi {
@@ -21,17 +23,25 @@ $shadow-color: #888;
 	margin-left: -58px;
 }
 .tweet {
+	font-family: 'Noto Sans', sans-serif;
+	font-size: 13px;
+	line-height: 1.33;
 	border: 1px solid darken(whitesmoke, 15%);
-	margin: 10px 10px 10px 10px;
+	margin: 10px;
 	padding: 10px 10px 10px 68px;
 	position: relative;
 	z-index: 20;
-	min-height: 7em;
 	background-color: rgba(255,255,255,0.95);
+}
+.inner-tweet {
+	max-width: 438px;
+	max-height: 132px;
+	padding: 6px;
 }
 .avatar {
 	height: 48px;
 	width: 48px;
+	border-radius: 5px;
 }
 .well {
 	padding: 19px 8px 19px 8px;
@@ -43,12 +53,15 @@ $shadow-color: #888;
 	overflow: hidden;
 }
 .tweet-area {
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
 	-webkit-box-shadow: none;
 	box-shadow: none;
 	border-color: whitesmoke;
 	position: absolute;
 	margin: 0;
-	padding: 0;
+	padding: 35px 0 0 0;
 	background-color: rgba(255,255,255,0);
 	border-radius: 0;
 	height: 500px;
@@ -76,22 +89,17 @@ $shadow-color: #888;
 .cc {
 	text-align: center;
 }
-@mixin keyframes-slide($prefix: '') {
-        100% { #{$prefix}transform: translateX(500px); opacity: 1.0;}
-        100% { #{$prefix}transform: translateX(500px); opacity: 0;}
+@mixin keyframes-revealX($prefix, $start, $dest) {
+        0% { #{$prefix}transform: translateX(#{$start}); opacity: 0;}
+        100% { #{$prefix}transform: translateX(#{$dest}); opacity: 1;}
 }
-@-webkit-keyframes slide {
-        @include keyframes-slide(-webkit-)
+
+@mixin keyframes-slideY($prefix, $start, $dest) {
+        0% { #{$prefix}transform: translateY(#{$start}); opacity: 1;}
+        100% { #{$prefix}transform: translateY(#{$dest}); opacity: 1;}
 }
-@-moz-keyframes slide {
-        @include keyframes-slide(-moz-)
-}
-@-o-keyframes slide {
-        @include keyframes-slide(-o-)
-}
-@keyframes slide {
-        @include keyframes-slide()
-}
+$tweet-height: 132px;
+
 @mixin transform-origin($x: '', $y: '', $z: '') {
         -webkit-transform-origin: #{$x} #{$y} #{$z};
         -moz-transform-origin: #{$x} #{$y} #{$z};
@@ -104,20 +112,78 @@ $shadow-color: #888;
         -o-animation-name: #{$name};
         animation-name: #{$name};
 }
-.slide {
-        @include transform-origin(center, center);
-        @include animation-name(slide);
-}
 @mixin animation-params($prefix, $duration, $delay, $timing, $fillmode) {
         #{$prefix}animation-duration: #{$duration};
         #{$prefix}animation-delay: #{$delay};
         #{$prefix}animation-timing-function: #{$timing};
         #{$prefix}animation-fill-mode: #{$fillmode};
 }
-$anim-duration: 2.0s;
+$anim-duration: 1.25s;
+$anim-easing: linear;
 .animate0{
-        @include animation-params(-webkit-, $anim-duration, 0s, ease-in, both);
-        @include animation-params(-moz-, $anim-duration, 0s, ease-in, both);
-        @include animation-params(-ms-, $anim-duration, 0s, ease-in, both);
-        @include animation-params('', $anim-duration, 0s, ease-in, both);
+        @include animation-params(-webkit-, $anim-duration, 0s, $anim-easing, both);
+        @include animation-params(-moz-, $anim-duration, 0s, $anim-easing, both);
+        @include animation-params(-ms-, $anim-duration, 0s, $anim-easing, both);
+        @include animation-params('', $anim-duration, 0s, $anim-easing, both);
+}
+
+$start: 0px;
+$end: $tweet-height;
+@for $i from 1 through 4 {
+	@-webkit-keyframes slide-down#{$i} {
+        	@include keyframes-slideY(-webkit-, #{$start}, #{$end})
+	}
+	@-moz-keyframes slide-down#{$i} {
+        	@include keyframes-slideY(-moz-, #{$start}, #{$end})
+	}
+	@-o-keyframes slide-down#{$i} {
+        	@include keyframes-slideY(-o-, #{$start}, #{$end})
+	}
+	@keyframes slide-down#{$i} {
+        	@include keyframes-slideY('', #{$start}, #{$end})
+	}
+	.slide-down#{$i} {
+        	@include transform-origin(top, top);
+        	@include animation-name(slide-down#{$i});
+	}
+	$start: $tweet-height * $i;
+	$end: $tweet-height * ($i + 1);
+}
+  
+$start: -600px;
+$end: 0px;
+@-webkit-keyframes slide-right {
+       	@include keyframes-revealX(-webkit-, #{$start}, #{$end})
+}
+@-moz-keyframes slide-right {
+       	@include keyframes-revealX(-moz-, #{$start}, #{$end})
+}
+@-o-keyframes slide-right {
+       	@include keyframes-revealX(-o-, #{$start}, #{$end})
+}
+@keyframes slide-right {
+       	@include keyframes-revealX('', #{$start}, #{$end})
+}
+.reveal-right {
+       	@include transform-origin(top, top);
+       	@include animation-name(slide-right);
+}
+
+$start: 600px;
+$end: 0px;
+@-webkit-keyframes slide-left {
+       	@include keyframes-revealX(-webkit-, #{$start}, #{$end})
+}
+@-moz-keyframes slide-left {
+       	@include keyframes-revealX(-moz-, #{$start}, #{$end})
+}
+@-o-keyframes slide-left {
+       	@include keyframes-revealX(-o-, #{$start}, #{$end})
+}
+@keyframes slide-left {
+       	@include keyframes-revealX('', #{$start}, #{$end})
+}
+.reveal-left {
+       	@include transform-origin(top, top);
+       	@include animation-name(slide-left);
 }
