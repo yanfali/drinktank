@@ -1,0 +1,79 @@
+@import 'sass-bootstrap/lib/bootstrap';
+
+.brand {
+	font-family: 'Gloria Hallelujah', cursive;
+}
+h2 {
+	font-family: 'Gloria Hallelujah', cursive;
+	text-align: center;
+}
+
+$shadow-color: #888;
+
+.coke, .pepsi {
+    margin: 5px;
+    height: 560px;
+    box-shadow: 0px 2px 1px lighten($shadow-color,20%);
+    border-radius: 3px;
+}
+.tweet-image {
+	float: left;
+	margin-left: -58px;
+}
+.tweet {
+	border: 1px solid darken(whitesmoke, 15%);
+	margin: 10px 10px 10px 10px;
+	padding: 10px 10px 10px 68px;
+	position: relative;
+	z-index: 20;
+	min-height: 7em;
+	background-color: rgba(255,255,255,0.95);
+}
+.avatar {
+	height: 48px;
+	width: 48px;
+	border-radius: 5px;
+}
+.well {
+	padding: 19px 8px 19px 8px;
+}
+.row {
+	margin: 0px -19px 20px -19px;
+}
+.red, .blue {
+	overflow: hidden;
+}
+.tweet-area {
+	-webkit-box-shadow: none;
+	box-shadow: none;
+	border-color: whitesmoke;
+	position: absolute;
+	margin: 0;
+	padding: 0;
+	background-color: rgba(255,255,255,0);
+	border-radius: 0;
+	height: 500px;
+	z-index: 10;
+}
+.can-row {
+}
+.can-svg {
+	position: relative;
+	height: 500px;
+	width: 500px;
+	margin: 0px 0 0 -15px;
+	z-index: 0;
+}
+.pep-can-color {
+	fill: #000d82;
+}
+.cok-can-color {
+	fill: #b81321;
+}
+.start-coke {
+}
+.start-pepsi {
+}
+.cc {
+	text-align: center;
+}
