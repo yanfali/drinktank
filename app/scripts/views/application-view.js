@@ -9,7 +9,8 @@ define(['jquery', 'underscore', 'backbone', 'templates', ], function($, _, Backb
         HOURS_AS_MILLIS = MINUTE_AS_MILLIS * MINUTES_IN_HOUR,
         HOURS_IN_DAY = 24,
         DAY_AS_MILLIS = HOURS_AS_MILLIS * HOURS_IN_DAY,
-        dateRegexp = new RegExp(/(\w+)\s+(\w+)\s+(\d+)\s+(\d{4})/);
+        dateRegexp = new RegExp(/(\w+)\s+(\w+)\s+(\d+)\s+(\d{4})/),
+        sourceRegexp = new RegExp(/&gt;(.*)&lt;/);
     var TweetView = Backbone.View.extend({
         template: JST['app/scripts/templates/tweet.ejs'],
         initialize: function( /*opts*/ ) {
@@ -17,7 +18,7 @@ define(['jquery', 'underscore', 'backbone', 'templates', ], function($, _, Backb
         },
         millisToNearestUnit: function(ms) {
             var secs, minutes, hours, days;
-            console.log(ms + 'ms');
+            //console.log(ms + 'ms');
             if (ms >= DAY_AS_MILLIS) {
                 days = ms / DAY_AS_MILLIS;
                 days = Math.floor(hours);
@@ -49,6 +50,10 @@ define(['jquery', 'underscore', 'backbone', 'templates', ], function($, _, Backb
             var timeStr = date.toLocaleTimeString().replace(/:\d{2} /, ' ');
             var dateArr = dateRegexp.exec(date.toDateString());
             json.created_at = timeStr + ' - ' + dateArr[3] + ' ' + dateArr[2] + ' ' + dateArr[4].substr(2, 4);
+            // replace single quotes with html entity so you can use
+            // it in title. Should also prevent escaping.
+            json.text = json.text.replace(/'/g, '&#39;');
+            json.source = sourceRegexp.exec(json.source)[1];
             this.$el.html(this.template(json));
         }
     });
@@ -64,7 +69,6 @@ define(['jquery', 'underscore', 'backbone', 'templates', ], function($, _, Backb
             }
         },
         add: function(model) {
-            console.log(model.get('from_user_name'));
             var view = new this.model({
                 model: model
             });
@@ -74,6 +78,9 @@ define(['jquery', 'underscore', 'backbone', 'templates', ], function($, _, Backb
                 visibility: 'hidden'
             });
             this.$el.prepend($view);
+            this.$el.on('webkitTransitionEnd', function(el) {
+                console.log(el + ' finished');
+            });
             $view.css({
                 visibility: 'visible'
             }).addClass(this.addClazz + ' animate0');
