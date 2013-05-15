@@ -26,15 +26,16 @@ $shadow-color: #888;
 	line-height: 1.33;
 	border: 1px solid darken(whitesmoke, 15%);
 	margin: 10px;
-	padding: 10px 10px 10px 68px;
+	padding: 10px 10px 8px 68px;
 	position: relative;
 	z-index: 20;
 	background-color: rgba(255,255,255,0.95);
 }
 .inner-tweet {
-	max-width: 438px;
-	max-height: 132px;
-	padding: 6px;
+	padding: 6px 6px 0 6px;
+	p {
+		min-height: 50px;
+	}
 }
 .avatar {
 	height: 48px;
