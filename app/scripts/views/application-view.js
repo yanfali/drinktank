@@ -53,7 +53,31 @@ define(['jquery', 'underscore', 'backbone', 'templates', ], function($, _, Backb
         }
     });
     var TweetAreaView = Backbone.View.extend({
-        el: '.tweet-area'
+        el: '.tweet-area',
+        model: TweetView,
+        initialize: function(opts) {
+            if (this.collection) {
+                this.listenTo(this.collection, 'add', this.add, this);
+            }
+            if (opts && opts.addClazz) {
+                this.addClazz = opts.addClazz;
+            }
+        },
+        add: function(model) {
+            console.log(model.get('from_user_name'));
+            var view = new this.model({
+                model: model
+            });
+            view.render();
+            var $view = view.$el;
+            $view.css({
+                visibility: 'hidden'
+            });
+            this.$el.prepend($view);
+            $view.css({
+                visibility: 'visible'
+            }).addClass(this.addClazz + ' animate0');
+        }
     });
 
     return {

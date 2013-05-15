@@ -25,9 +25,20 @@ require.config({
 
 require(['backbone', 'routes/application-router', 'views/application-view', 'collections/application-collection'], function(Backbone, Router, Views, Collections) {
     var appRouter = new Router();
-    var redTweetArea = new Views.TweetAreaView();
-    var blueTweetArea = new Views.TweetAreaView();
-    var tweets = new Collections();
+    var redTweets = new Collections([], {
+        hashTag: 'coke'
+    });
+    var blueTweets = new Collections([], {
+        hashTag: 'pepsi'
+    });
+    var redTweetArea = new Views.TweetAreaView({
+        collection: redTweets,
+        addClazz: 'reveal-right'
+    });
+    var blueTweetArea = new Views.TweetAreaView({
+        collection: blueTweets,
+        addClazz: 'reveal-left'
+    });
     var app = {
         lib: {
             Views: {
@@ -39,7 +50,10 @@ require(['backbone', 'routes/application-router', 'views/application-view', 'col
             blue: blueTweetArea
         },
         router: appRouter,
-        tweets: tweets
+        tweets: {
+            red: redTweets,
+            blue: blueTweets
+        }
     };
     window.app = app;
     redTweetArea.setElement('.red.tweet-area');

@@ -9,8 +9,10 @@ define(['underscore', 'backbone', 'models/application-model'], function(_, Backb
         count: 5,
         lang: 'en',
         initialize: function(models, opts) {
-            if (opts && opts.hashTag) {
-                this.hashTag = opts.hashTag;
+            if (opts) {
+                if (opts.hashTag) {
+                    this.hashTag = opts.hashTag;
+                }
             }
             _.bindAll(this, 'parse');
         },
@@ -24,7 +26,7 @@ define(['underscore', 'backbone', 'models/application-model'], function(_, Backb
         parse: function(data) {
             console.log(data);
             this.nextPage = data.next_page;
-	    this.page = data.page;
+            this.page = data.page;
             return data.results;
         }
     });
