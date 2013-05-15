@@ -59,8 +59,12 @@ require(['backbone', 'routes/application-router', 'views/application-view', 'col
     window.app = app;
     redTweetArea.setElement('.red.tweet-area');
     blueTweetArea.setElement('.blue.tweet-area');
-    app.tweets.red.fetch();
-    app.tweets.blue.fetch();
+    setTimeout(function() {
+        app.tweets.red.fetch();
+    }, 0);
+    setTimeout(function() {
+        app.tweets.blue.fetch();
+    }, 0);
     app.interval.red = setInterval(function() {
         app.tweets.red.fetch();
     }, 10000);
