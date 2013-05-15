@@ -58,6 +58,11 @@ require(['backbone', 'routes/application-router', 'views/application-view', 'col
     window.app = app;
     redTweetArea.setElement('.red.tweet-area');
     blueTweetArea.setElement('.blue.tweet-area');
+/*    setInterval(function() {
+        app.tweets.red.fetch();
+        app.tweets.blue.fetch();
+    }, 10000);
+    */
     appRouter.on('route:defaultRoute', function(actions) {
         if (actions === null) {
             console.log(new Date() + ' initial load');

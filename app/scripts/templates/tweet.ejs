@@ -1,6 +1,6 @@
 <div class="tweet">
 	<div class="inner-tweet">
-		<div class="tweet-image">
+		<div title='<%= source %>' class="tweet-image">
 			<img class="avatar" src="<%= profile_image_url %>"></img>
 		</div>
 		<div>
@@ -8,7 +8,7 @@
 			<span class="muted">@<%= from_user %></span>
 			<span class="muted timesince"><%= timesince %></span>
 		</div>
-		<p title='<%= source %>'><%= text %></p>
+		<p title='<%= text %>'><%= text %></p>
 		<div class="muted"><%= created_at %></div>
 	</div>
 </div>

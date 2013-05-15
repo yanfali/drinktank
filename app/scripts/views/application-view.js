@@ -69,21 +69,40 @@ define(['jquery', 'underscore', 'backbone', 'templates', ], function($, _, Backb
             }
         },
         add: function(model) {
-            var view = new this.model({
-                model: model
+            var d = $.Deferred();
+            var $tweets = this.$('.tweet');
+            if ($tweets.length) {
+                $tweets.addClass('slide-down1 animate0');
+                var fn = function(el) {
+                        d.resolve(el);
+                    };
+                $tweets[0].addEventListener('webkitAnimationEnd', fn);
+                $tweets[0].addEventListener('animationend', fn);
+            } else {
+                d.resolve();
+            }
+            var p = d.promise();
+            var self = this;
+            p.done(function() {
+                $tweets.removeClass('slide-down1 animate0');
+                var view = new self.model({
+                    model: model
+                });
+                view.render();
+                var $view = view.$el;
+                $view.css({
+                    visibility: 'hidden'
+                });
+                self.$el.prepend($view);
+                var fn = function() {
+                        $view.removeClass('animate0 reveal-left reveal-right');
+                    };
+                $view[0].addEventListener('animationend', fn);
+                $view[0].addEventListener('webkitAnimationEnd', fn);
+                $view.css({
+                    visibility: 'visible'
+                }).addClass(self.addClazz + ' animate0');
             });
-            view.render();
-            var $view = view.$el;
-            $view.css({
-                visibility: 'hidden'
-            });
-            this.$el.prepend($view);
-            this.$el.on('webkitTransitionEnd', function(el) {
-                console.log(el + ' finished');
-            });
-            $view.css({
-                visibility: 'visible'
-            }).addClass(this.addClazz + ' animate0');
         }
     });
 

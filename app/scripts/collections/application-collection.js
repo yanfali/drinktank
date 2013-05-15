@@ -6,7 +6,7 @@ define(['underscore', 'backbone', 'models/application-model'], function(_, Backb
     var Tweets = Backbone.Collection.extend({
         model: Tweet,
         hashTag: 'pepsi',
-        count: 5,
+        count: 1,
         lang: 'en',
         initialize: function(models, opts) {
             if (opts) {
