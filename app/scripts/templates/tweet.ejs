@@ -1,14 +1,14 @@
 <div class="tweet">
 	<div class="inner-tweet">
 		<div class="tweet-image">
-			<img class="avatar" src="<%= srcurl %>"></img>
+			<img class="avatar" src="<%= profile_image_url %>"></img>
 		</div>
 		<div>
-			<span><strong><%= propername %></strong></span>
-			<span class="muted"><%= username %></span>
+			<span><strong><%= from_user_name %></strong></span>
+			<span class="muted">@<%= from_user %></span>
 			<span class="muted timesince"><%= timesince %></span>
 		</div>
 		<p><%= text %></p>
-		<div class="muted"><%= created =></div>
+		<div class="muted"><%= created_at %></div>
 	</div>
 </div>

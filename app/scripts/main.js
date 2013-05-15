@@ -25,17 +25,25 @@ require.config({
 
 require(['backbone', 'routes/application-router', 'views/application-view', 'collections/application-collection'], function(Backbone, Router, Views, Collections) {
     var appRouter = new Router();
-    var tweetArea = new Views.TweetAreaView();
+    var redTweetArea = new Views.TweetAreaView();
+    var blueTweetArea = new Views.TweetAreaView();
     var tweets = new Collections();
     var app = {
+        lib: {
+            Views: {
+                TweetView: Views.TweetView
+            }
+        },
         views: {
-            tweetArea: tweetArea
+            red: redTweetArea,
+            blue: blueTweetArea
         },
         router: appRouter,
         tweets: tweets
     };
     window.app = app;
-    tweetArea.setElement('.tweet-area');
+    redTweetArea.setElement('.red.tweet-area');
+    blueTweetArea.setElement('.blue.tweet-area');
     appRouter.on('route:defaultRoute', function(actions) {
         if (actions === null) {
             console.log(new Date() + ' initial load');
