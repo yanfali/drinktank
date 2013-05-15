@@ -10,3 +10,4 @@ and framework code is mine. It was written over a couple of days
 of caffeinated work.  The most interesting thing for me is the use
 of JQuery.Deferred for the CSS3 animation scheduling.
 
+There's a demo at http://dl.dropboxusercontent.com/u/54323842/drinktank/index.html
