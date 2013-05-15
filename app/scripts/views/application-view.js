@@ -41,12 +41,12 @@ define(['jquery', 'underscore', 'backbone', 'templates', ], function($, _, Backb
             }
             return 'Just Now';
         },
-        render: function() {
-            var json = this.model.toJSON();
+        toJSON: function(model) {
+            var json = model.toJSON();
             var date = new Date(json.created_at);
-            var created = date.getTime();
-            var now = Date.now();
-            json.timesince = this.millisToNearestUnit(now - created);
+            var createdMs = date.getTime();
+            var nowMs = Date.now();
+            json.timesince = this.millisToNearestUnit(nowMs - createdMs);
             var timeStr = date.toLocaleTimeString().replace(/:\d{2} /, ' ');
             var dateArr = dateRegexp.exec(date.toDateString());
             json.created_at = timeStr + ' - ' + dateArr[3] + ' ' + dateArr[2] + ' ' + dateArr[4].substr(2, 4);
@@ -54,21 +54,61 @@ define(['jquery', 'underscore', 'backbone', 'templates', ], function($, _, Backb
             // it in title. Should also prevent escaping.
             json.text = json.text.replace(/'/g, '&#39;');
             json.source = sourceRegexp.exec(json.source)[1];
+            return json;
+        },
+        render: function() {
+            var json = this.toJSON(this.model);
             this.$el.html(this.template(json));
         }
     });
     var TweetAreaView = Backbone.View.extend({
         el: '.tweet-area',
-        model: TweetView,
+        itemView: TweetView,
         removeCount: 5,
-        viewModel: {},
         initialize: function(opts) {
+            this.viewModel = {};
             if (this.collection) {
                 this.listenTo(this.collection, 'add', this.add, this);
             }
             if (opts && opts.addClazz) {
                 this.addClazz = opts.addClazz;
             }
+            _.bindAll(this, 'animateInsertion', 'cleanUpOldTweetViews');
+        },
+        animateInsertion: function($tweets, model) {
+            $tweets.removeClass('slide-down1 animate0');
+            var view = new this.itemView({
+                model: model
+            });
+            this.viewModel[model.id] = view;
+            view.render();
+            var $view = view.$el;
+            $view.css({
+                visibility: 'hidden'
+            });
+            this.$el.prepend($view);
+            var fn = function() {
+                    $view.removeClass('animate0 reveal-left reveal-right');
+                };
+            $view[0].addEventListener('animationend', fn);
+            $view[0].addEventListener('webkitAnimationEnd', fn);
+            $view.css({
+                visibility: 'visible'
+            }).addClass(this.addClazz + ' animate0');
+            setTimeout(this.cleanUpOldTweetViews, 0);
+        },
+        cleanUpOldTweetViews: function() {
+            var $tweets = this.$('.tweet');
+            var len = $tweets.length;
+            if (len < this.removeCount) {
+                return;
+            }
+            var id = $tweets.last().attr('data-id');
+            var view = this.viewModel[id];
+            //console.log('at ' + len + ' removing ' + id);
+            view.remove();
+            view.model = null;
+            delete this.viewModel[id];
         },
         add: function(model) {
             var d = $.Deferred();
@@ -86,37 +126,7 @@ define(['jquery', 'underscore', 'backbone', 'templates', ], function($, _, Backb
             var p = d.promise();
             var self = this;
             p.done(function() {
-                $tweets.removeClass('slide-down1 animate0');
-                var view = new self.model({
-                    model: model
-                });
-                self.viewModel[model.id] = view;
-                view.render();
-                var $view = view.$el;
-                $view.css({
-                    visibility: 'hidden'
-                });
-                self.$el.prepend($view);
-                var fn = function() {
-                        $view.removeClass('animate0 reveal-left reveal-right');
-                    };
-                $view[0].addEventListener('animationend', fn);
-                $view[0].addEventListener('webkitAnimationEnd', fn);
-                $view.css({
-                    visibility: 'visible'
-                }).addClass(self.addClazz + ' animate0');
-                setTimeout(function() {
-                    var len = self.$('.tweet').length;
-                    if (self.$('.tweet').length < self.removeCount) {
-                        return;
-                    }
-                    var id = $tweets.last().attr('data-id');
-                    var view = self.viewModel[id];
-                    console.log('at' + len + 'removing ' + id);
-                    view.remove();
-                    view.model = null;
-                    delete self.viewModel[id];
-                }, 0);
+                self.animateInsertion($tweets, model);
             });
         }
     });
