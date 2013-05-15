@@ -1,4 +1,4 @@
-/*global require */
+/*global require, $ */
 'use strict';
 
 require.config({
@@ -53,22 +53,44 @@ require(['backbone', 'routes/application-router', 'views/application-view', 'col
         tweets: {
             red: redTweets,
             blue: blueTweets
-        }
+        },
+        interval: {}
     };
     window.app = app;
     redTweetArea.setElement('.red.tweet-area');
     blueTweetArea.setElement('.blue.tweet-area');
-/*    setInterval(function() {
+    app.tweets.red.fetch();
+    app.tweets.blue.fetch();
+    app.interval.red = setInterval(function() {
         app.tweets.red.fetch();
+    }, 10000);
+    app.interval.blue = setInterval(function() {
         app.tweets.blue.fetch();
     }, 10000);
-    */
-    appRouter.on('route:defaultRoute', function(actions) {
-        if (actions === null) {
-            console.log(new Date() + ' initial load');
+    var $cokebtn = $('.navbar .btn-coke');
+    $cokebtn.on('click', function() {
+        if ($cokebtn.text() === 'Stop coke') {
+            clearInterval(app.interval.red);
+            $cokebtn.text('Start coke');
         } else {
-            console.log(new Date() + ' route ' + actions);
+            app.tweets.red.fetch();
+            app.interval.red = setInterval(function() {
+                app.tweets.red.fetch();
+            }, 10000);
+            $cokebtn.text('Stop coke');
         }
     });
-    Backbone.history.start();
+    var $pepsibtn = $('.navbar .btn-pepsi');
+    $pepsibtn.on('click', function() {
+        if ($pepsibtn.text() === 'Stop pepsi') {
+            clearInterval(app.interval.blue);
+            $pepsibtn.text('Start pepsi');
+        } else {
+            app.tweets.blue.fetch();
+            app.interval.blue = setInterval(function() {
+                app.tweets.blue.fetch();
+            }, 10000);
+            $pepsibtn.text('Stop pepsi');
+        }
+    });
 });

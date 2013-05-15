@@ -7,6 +7,7 @@ define(['underscore', 'backbone', 'models/application-model'], function(_, Backb
         model: Tweet,
         hashTag: 'pepsi',
         count: 1,
+        cycle: 20,
         lang: 'en',
         initialize: function(models, opts) {
             if (opts) {
@@ -18,7 +19,7 @@ define(['underscore', 'backbone', 'models/application-model'], function(_, Backb
         },
         baseUrl: 'http://search.twitter.com/search.json',
         url: function() {
-            if (this.nextPage) {
+            if (this.page < this.cycle && this.nextPage) {
                 return this.baseUrl + this.nextPage + '&callback=?';
             }
             return this.baseUrl + '?q=%23' + this.hashTag + '&rpp=' + this.count + '&lang=' + this.lang + '&callback=?';
@@ -26,6 +27,7 @@ define(['underscore', 'backbone', 'models/application-model'], function(_, Backb
         parse: function(data) {
             //console.log(data);
             this.nextPage = data.next_page;
+            this.refreshUrl = data.refresh_url;
             this.page = data.page;
             return data.results;
         }

@@ -60,6 +60,8 @@ define(['jquery', 'underscore', 'backbone', 'templates', ], function($, _, Backb
     var TweetAreaView = Backbone.View.extend({
         el: '.tweet-area',
         model: TweetView,
+        removeCount: 5,
+        viewModel: {},
         initialize: function(opts) {
             if (this.collection) {
                 this.listenTo(this.collection, 'add', this.add, this);
@@ -88,6 +90,7 @@ define(['jquery', 'underscore', 'backbone', 'templates', ], function($, _, Backb
                 var view = new self.model({
                     model: model
                 });
+                self.viewModel[model.id] = view;
                 view.render();
                 var $view = view.$el;
                 $view.css({
@@ -102,6 +105,18 @@ define(['jquery', 'underscore', 'backbone', 'templates', ], function($, _, Backb
                 $view.css({
                     visibility: 'visible'
                 }).addClass(self.addClazz + ' animate0');
+                setTimeout(function() {
+                    var len = self.$('.tweet').length;
+                    if (self.$('.tweet').length < self.removeCount) {
+                        return;
+                    }
+                    var id = $tweets.last().attr('data-id');
+                    var view = self.viewModel[id];
+                    console.log('at' + len + 'removing ' + id);
+                    view.remove();
+                    view.model = null;
+                    delete self.viewModel[id];
+                }, 0);
             });
         }
     });

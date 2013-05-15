@@ -16,6 +16,9 @@ $shadow-color: #888;
     box-shadow: 0px 2px 1px lighten($shadow-color,20%);
     border-radius: 3px;
 }
+.btn-coke, .btn-pepsi {
+    width: 75px;
+}
 .tweet-image {
 	float: left;
 	margin-left: -58px;
