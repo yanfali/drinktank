@@ -24,7 +24,7 @@ define(['underscore', 'backbone', 'models/application-model'], function(_, Backb
             return this.baseUrl + '?q=%23' + this.hashTag + '&rpp=' + this.count + '&lang=' + this.lang + '&callback=?';
         },
         parse: function(data) {
-            console.log(data);
+            //console.log(data);
             this.nextPage = data.next_page;
             this.page = data.page;
             return data.results;
