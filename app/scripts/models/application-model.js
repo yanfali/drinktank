@@ -6,7 +6,7 @@ define(['underscore', 'backbone', ], function(_, Backbone) {
     /*
      * Backbone Tweet Model
      *
-     * Does nothing particular interesting, just holds attributes
+     * Does nothing particularly interesting, just holds attributes
      * returned by twitter
      */
     var Tweet = Backbone.Model.extend({
