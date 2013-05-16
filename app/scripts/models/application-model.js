@@ -1,14 +1,16 @@
 /*global define*/
 
-define([
-    'underscore',
-    'backbone',
-], function (_, Backbone) {
+define(['underscore', 'backbone', ], function(_, Backbone) {
     'use strict';
 
+    /*
+     * Backbone Tweet Model
+     *
+     * Does nothing particular interesting, just holds attributes
+     * returned by twitter
+     */
     var Tweet = Backbone.Model.extend({
-        defaults: {
-        }
+        defaults: {}
     });
 
     return Tweet;

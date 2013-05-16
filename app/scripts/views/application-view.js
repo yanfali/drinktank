@@ -2,6 +2,11 @@
 
 define(['jquery', 'underscore', 'backbone', 'templates', ], function($, _, Backbone, JST) {
     'use strict';
+    /*
+     *
+     * Module Pattern Constants.
+     *
+     */
     var MILLIS_IN_SECOND = 1000,
         SECONDS_IN_MINUTE = 60,
         MINUTE_AS_MILLIS = MILLIS_IN_SECOND * SECONDS_IN_MINUTE,
@@ -11,12 +16,24 @@ define(['jquery', 'underscore', 'backbone', 'templates', ], function($, _, Backb
         DAY_AS_MILLIS = HOURS_AS_MILLIS * HOURS_IN_DAY,
         dateRegexp = new RegExp(/(\w+)\s+(\w+)\s+(\d+)\s+(\d{4})/),
         sourceRegexp = new RegExp(/&gt;(.*)&lt;/);
+
+    /*
+     *
+     * TweetView
+     *
+     * View used to generate the Twitter style cards elements.
+     *
+     */
     var TweetView = Backbone.View.extend({
-        template: JST['app/scripts/templates/tweet.ejs'],
+        template: JST['app/scripts/templates/tweetView.ejs'],
         className: 'tweet',
         initialize: function( /*opts*/ ) {
             _.bindAll(this, 'render');
         },
+        /*
+         * convert a ms timestamp into something more human friendly
+         * in the style of twitter.
+         */
         millisToNearestUnit: function(ms) {
             var secs, minutes, hours, days;
             //console.log(ms + 'ms');
@@ -42,15 +59,24 @@ define(['jquery', 'underscore', 'backbone', 'templates', ], function($, _, Backb
             }
             return 'Just Now';
         },
+        /*
+         *
+         * Take the associated Backbone.Model and massage the JSON
+         * so that it outputs human friendly values.
+         *
+         */
         toJSON: function(model) {
             var json = model.toJSON();
-            var date = new Date(json.created_at);
-            var createdMs = date.getTime();
+            var createdAt = new Date(json.created_at);
+            var createdMs = createdAt.getTime();
             var nowMs = Date.now();
             json.timesince = this.millisToNearestUnit(nowMs - createdMs);
-            var timeStr = date.toLocaleTimeString().replace(/:\d{2} /, ' ');
-            var dateArr = dateRegexp.exec(date.toDateString());
+
+            /* Twitter style date and time formating */
+            var timeStr = createdAt.toLocaleTimeString().replace(/:\d{2} /, ' ');
+            var dateArr = dateRegexp.exec(createdAt.toDateString());
             json.created_at = timeStr + ' - ' + dateArr[3] + ' ' + dateArr[2] + ' ' + dateArr[4].substr(2, 4);
+
             // replace single quotes with html entity so you can use
             // it in title. Should also prevent escaping.
             json.text = json.text.replace(/'/g, '&#39;');
@@ -62,10 +88,25 @@ define(['jquery', 'underscore', 'backbone', 'templates', ], function($, _, Backb
             this.$el.html(this.template(json));
         }
     });
+
+    /*
+     *
+     * TweetAreaView
+     *
+     * Manages the DOM element responsible for animating and displaying
+     * the TweetViews in a scrolling list.
+     *
+     */
     var TweetAreaView = Backbone.View.extend({
         el: '.tweet-area',
         itemView: TweetView,
         removeCount: 5,
+        /*
+         *
+         * Read optional values and bind fns to this
+         * instance.
+         *
+         */
         initialize: function(opts) {
             this.viewModel = {};
             if (this.collection) {
@@ -76,6 +117,14 @@ define(['jquery', 'underscore', 'backbone', 'templates', ], function($, _, Backb
             }
             _.bindAll(this, 'animateInsertion', 'cleanUpOldTweetViews');
         },
+	/*
+	 *
+	 * Animate the insert from left or right callback
+	 *
+	 * @param $tweets - group of tweets that have just been animated to scroll down
+	 * @param model to add to TweetAreaView
+	 *
+	 */
         animateInsertion: function($tweets, model) {
             $tweets.removeClass('slide-down1 animate0');
             var view = new this.itemView({
@@ -88,7 +137,7 @@ define(['jquery', 'underscore', 'backbone', 'templates', ], function($, _, Backb
             view.render();
             var fn = function() {
                     view.el.className = 'tweet';
-                    console.log(view.el.className);
+                    //console.log(view.el.className);
                 };
             view.el.addEventListener('animationend', fn);
             view.el.addEventListener('webkitAnimationEnd', fn);
@@ -96,6 +145,15 @@ define(['jquery', 'underscore', 'backbone', 'templates', ], function($, _, Backb
             this.$el.prepend(view.$el);
             setTimeout(this.cleanUpOldTweetViews, 0);
         },
+	/*
+	 *
+	 * Callback to manage the total number of
+	 * elements being displayed.
+	 *
+	 * Once an element has scrolled out of the view port it is
+	 * safe to remove it from the view.
+	 *
+	 */
         cleanUpOldTweetViews: function() {
             //console.time('cleaning up views')
             var tweets = this.el.getElementsByClassName('tweet');
@@ -112,6 +170,16 @@ define(['jquery', 'underscore', 'backbone', 'templates', ], function($, _, Backb
             delete this.viewModel[id];
             //console.timeEnd('cleaning up views');
         },
+	/*
+	 *
+	 * Collection callback to handle 'add' events.
+	 * Responsible for initiating the scroll animation
+	 * for all existing events and triggering the callback
+	 * to add a new TweetView.
+	 *
+	 * Uses jQuery deferred/promises to manage the callback chain.
+	 *
+	 */
         add: function(model) {
             var d = $.Deferred();
             var $tweets = this.$('.tweet');

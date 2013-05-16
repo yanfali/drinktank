@@ -39,6 +39,12 @@ require(['backbone', 'routes/application-router', 'views/application-view', 'col
         collection: blueTweets,
         addClazz: 'reveal-left'
     });
+
+    /*
+     *
+     * Expose Application to window for debugging and testing
+     *
+     */
     var app = {
         lib: {
             Views: {
@@ -57,44 +63,74 @@ require(['backbone', 'routes/application-router', 'views/application-view', 'col
         interval: {}
     };
     window.app = app;
+
+    /*
+     * Bind Tweet Areas to existing DOM Elements
+     */
     redTweetArea.setElement('.red.tweet-area');
     blueTweetArea.setElement('.blue.tweet-area');
+
+    /*
+     * Fetch first tweets
+     */
     setTimeout(function() {
         app.tweets.red.fetch();
-    }, 0);
-    setTimeout(function() {
         app.tweets.blue.fetch();
     }, 0);
+
+    /*
+     * Start fetching tweets every 10 seconds
+     */
     app.interval.red = setInterval(function() {
         app.tweets.red.fetch();
     }, 10000);
     app.interval.blue = setInterval(function() {
         app.tweets.blue.fetch();
     }, 10000);
+
+    /*
+     *
+     * This belongs in a navbar view but it's not
+     * very complex. Leaving it here for now.
+     * Basically a toggle for starting and stopping
+     * the fetching of tweets.
+     *
+     */
+    var labels = {
+        coke: {
+            stop: 'Stop coke',
+            start: 'Start coke'
+        },
+        pepsi: {
+            stop: 'Stop pepsi',
+            start: 'Start pepsi'
+        }
+    };
     var $cokebtn = $('.navbar .btn-coke');
     $cokebtn.on('click', function() {
-        if ($cokebtn.text() === 'Stop coke') {
+        if ($cokebtn.text() === labels.coke.stop) {
             clearInterval(app.interval.red);
-            $cokebtn.text('Start coke');
+            $cokebtn.text(labels.coke.start);
         } else {
             app.tweets.red.fetch();
             app.interval.red = setInterval(function() {
                 app.tweets.red.fetch();
             }, 10000);
-            $cokebtn.text('Stop coke');
+            $cokebtn.text(labels.coke.stop);
         }
     });
+
     var $pepsibtn = $('.navbar .btn-pepsi');
     $pepsibtn.on('click', function() {
-        if ($pepsibtn.text() === 'Stop pepsi') {
+        if ($pepsibtn.text() === labels.pepsi.stop) {
             clearInterval(app.interval.blue);
-            $pepsibtn.text('Start pepsi');
+            $pepsibtn.text(labels.pepsi.start);
         } else {
             app.tweets.blue.fetch();
             app.interval.blue = setInterval(function() {
                 app.tweets.blue.fetch();
             }, 10000);
-            $pepsibtn.text('Stop pepsi');
+            $pepsibtn.text(labels.pepsi.stop);
         }
     });
 });
