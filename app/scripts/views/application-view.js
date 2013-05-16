@@ -86,14 +86,12 @@ define(['jquery', 'underscore', 'backbone', 'templates', ], function($, _, Backb
             });
             this.viewModel[model.id] = view;
             view.render();
-            view.el.style.visibility = 'hidden';
             var fn = function() {
                     view.el.className = 'tweet';
                     console.log(view.el.className);
                 };
             view.el.addEventListener('animationend', fn);
             view.el.addEventListener('webkitAnimationEnd', fn);
-            view.el.style.visibility = 'visible';
             view.el.className = this.addClazz + ' animate0 tweet';
             this.$el.prepend(view.$el);
             setTimeout(this.cleanUpOldTweetViews, 0);
