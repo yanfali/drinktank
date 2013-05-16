@@ -13,6 +13,7 @@ define(['jquery', 'underscore', 'backbone', 'templates', ], function($, _, Backb
         sourceRegexp = new RegExp(/&gt;(.*)&lt;/);
     var TweetView = Backbone.View.extend({
         template: JST['app/scripts/templates/tweet.ejs'],
+        className: 'tweet',
         initialize: function( /*opts*/ ) {
             _.bindAll(this, 'render');
         },
@@ -78,43 +79,49 @@ define(['jquery', 'underscore', 'backbone', 'templates', ], function($, _, Backb
         animateInsertion: function($tweets, model) {
             $tweets.removeClass('slide-down1 animate0');
             var view = new this.itemView({
+                attributes: {
+                    'data-id': model.id
+                },
                 model: model
             });
             this.viewModel[model.id] = view;
             view.render();
-            var $view = view.$el;
-            $view.css({
-                visibility: 'hidden'
-            });
-            this.$el.prepend($view);
+            view.el.style.visibility = 'hidden';
             var fn = function() {
-                    $view.removeClass('animate0 reveal-left reveal-right');
+                    view.el.className = 'tweet';
+                    console.log(view.el.className);
                 };
-            $view[0].addEventListener('animationend', fn);
-            $view[0].addEventListener('webkitAnimationEnd', fn);
-            $view.css({
-                visibility: 'visible'
-            }).addClass(this.addClazz + ' animate0');
+            view.el.addEventListener('animationend', fn);
+            view.el.addEventListener('webkitAnimationEnd', fn);
+            view.el.style.visibility = 'visible';
+            view.el.className = this.addClazz + ' animate0 tweet';
+            this.$el.prepend(view.$el);
             setTimeout(this.cleanUpOldTweetViews, 0);
         },
         cleanUpOldTweetViews: function() {
-            var $tweets = this.$('.tweet');
-            var len = $tweets.length;
+            //console.time('cleaning up views')
+            var tweets = this.el.getElementsByClassName('tweet');
+            var len = tweets.length;
             if (len < this.removeCount) {
+                //console.timeEnd('cleaning up views');
                 return;
             }
-            var id = $tweets.last().attr('data-id');
+            var id = tweets[len - 1].getAttribute('data-id');
             var view = this.viewModel[id];
             //console.log('at ' + len + ' removing ' + id);
             view.remove();
             view.model = null;
             delete this.viewModel[id];
+            //console.timeEnd('cleaning up views');
         },
         add: function(model) {
             var d = $.Deferred();
             var $tweets = this.$('.tweet');
             if ($tweets.length) {
-                $tweets.addClass('slide-down1 animate0');
+                var i, iMax;
+                for (i = 0, iMax = $tweets.length; i < iMax; ++i) {
+                    $tweets[i].className = 'tweet slide-down1 animate0';
+                }
                 var fn = function(el) {
                         d.resolve(el);
                     };

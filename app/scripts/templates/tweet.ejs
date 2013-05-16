@@ -1,14 +1,12 @@
-<div class="tweet" data-id='<%= id %>'>
-	<div class="inner-tweet">
-		<div title='<%= source %>' class="tweet-image">
-			<img class="avatar" src="<%= profile_image_url %>"></img>
-		</div>
-		<div>
-			<span><strong><%= from_user_name %></strong></span>
-			<span class="muted">@<%= from_user %></span>
-			<span class="muted timesince"><%= timesince %></span>
-		</div>
-		<p title='<%= text %>'><%= text %></p>
-		<div class="muted"><%= created_at %></div>
+<div class="inner-tweet">
+	<div title='<%= source %>' class="tweet-image">
+		<img class="avatar" src="<%= profile_image_url %>"></img>
 	</div>
+	<div>
+		<span><strong><%= from_user_name %></strong></span>
+		<span class="muted">@<%= from_user %></span>
+		<span class="muted timesince"><%= timesince %></span>
+	</div>
+	<p title='<%= text %>'><%= text %></p>
+	<div class="muted"><%= created_at %></div>
 </div>
