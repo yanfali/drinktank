@@ -126,8 +126,8 @@ $tweet-height: 132px;
         #{$prefix}animation-timing-function: #{$timing};
         #{$prefix}animation-fill-mode: #{$fillmode};
 }
-$anim-duration: 1.25s;
-$anim-easing: linear;
+$anim-duration: 1.00s;
+$anim-easing: ease-in-out;
 .animate0{
         @include animation-params(-webkit-, $anim-duration, 0s, $anim-easing, both);
         @include animation-params(-moz-, $anim-duration, 0s, $anim-easing, both);
