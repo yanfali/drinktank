@@ -117,16 +117,24 @@ define(['jquery', 'underscore', 'backbone', 'templates', ], function($, _, Backb
             }
             _.bindAll(this, 'animateInsertion', 'cleanUpOldTweetViews');
         },
-	/*
-	 *
-	 * Animate the insert from left or right callback
-	 *
-	 * @param $tweets - group of tweets that have just been animated to scroll down
-	 * @param model to add to TweetAreaView
-	 *
-	 */
+        /*
+         *
+         * Animate the insert from left or right callback
+         *
+         * @param $tweets - group of tweets that have just been animated to scroll down
+         * @param model to add to TweetAreaView
+         *
+         */
         animateInsertion: function($tweets, model) {
-            $tweets.removeClass('slide-down1 animate0');
+            if ($tweets.length) {
+                var i, iMax;
+                for (i = 0, iMax = $tweets.length; i < iMax; ++i) {
+                    var classList = $tweets[i].classList;
+                    classList.remove('slide-down1');
+                    classList.remove('animate0');
+                }
+            }
+
             var view = new this.itemView({
                 attributes: {
                     'data-id': model.id
@@ -136,24 +144,29 @@ define(['jquery', 'underscore', 'backbone', 'templates', ], function($, _, Backb
             this.viewModel[model.id] = view;
             view.render();
             var fn = function() {
-                    view.el.className = 'tweet';
+                    var classList = view.el.classList;
+                    classList.remove('animate0');
+                    classList.remove('reveal-left');
+                    classList.remove('reveal-right');
                     //console.log(view.el.className);
                 };
             view.el.addEventListener('animationend', fn);
             view.el.addEventListener('webkitAnimationEnd', fn);
-            view.el.className = this.addClazz + ' animate0 tweet';
+            var classList = view.el.classList;
+            classList.add(this.addClazz);
+            classList.add('animate0');
             this.$el.prepend(view.$el);
             setTimeout(this.cleanUpOldTweetViews, 0);
         },
-	/*
-	 *
-	 * Callback to manage the total number of
-	 * elements being displayed.
-	 *
-	 * Once an element has scrolled out of the view port it is
-	 * safe to remove it from the view.
-	 *
-	 */
+        /*
+         *
+         * Callback to manage the total number of
+         * elements being displayed.
+         *
+         * Once an element has scrolled out of the view port it is
+         * safe to remove it from the view.
+         *
+         */
         cleanUpOldTweetViews: function() {
             //console.time('cleaning up views')
             var tweets = this.el.getElementsByClassName('tweet');
@@ -170,23 +183,25 @@ define(['jquery', 'underscore', 'backbone', 'templates', ], function($, _, Backb
             delete this.viewModel[id];
             //console.timeEnd('cleaning up views');
         },
-	/*
-	 *
-	 * Collection callback to handle 'add' events.
-	 * Responsible for initiating the scroll animation
-	 * for all existing events and triggering the callback
-	 * to add a new TweetView.
-	 *
-	 * Uses jQuery deferred/promises to manage the callback chain.
-	 *
-	 */
+        /*
+         *
+         * Collection callback to handle 'add' events.
+         * Responsible for initiating the scroll animation
+         * for all existing events and triggering the callback
+         * to add a new TweetView.
+         *
+         * Uses jQuery deferred/promises to manage the callback chain.
+         *
+         */
         add: function(model) {
             var d = $.Deferred();
             var $tweets = this.$('.tweet');
             if ($tweets.length) {
                 var i, iMax;
                 for (i = 0, iMax = $tweets.length; i < iMax; ++i) {
-                    $tweets[i].className = 'tweet slide-down1 animate0';
+                    var classList = $tweets[i].classList;
+                    classList.add('slide-down1');
+                    classList.add('animate0');
                 }
                 var fn = function(el) {
                         d.resolve(el);

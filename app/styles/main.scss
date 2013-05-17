@@ -87,9 +87,18 @@ $shadow-color: #888;
 .cok-can-color {
 	fill: #b81321;
 }
+@mixin translate-z($distance) {
+	-webkit-transform: translatez(#{$distance});
+	-moz-transform: translatez(#{$distance});
+    	-ms-transform: translatez(#{$distance});
+    	-o-transform: translatez(#{$distance});
+	transform: translatez(#{$distance});
+}
 .start-coke {
+	@include translate-z(0);
 }
 .start-pepsi {
+	@include translate-z(0);
 }
 .cc {
 	text-align: center;
