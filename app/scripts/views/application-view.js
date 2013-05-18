@@ -179,7 +179,9 @@ define(['jquery', 'underscore', 'backbone', 'templates', ], function($, _, Backb
             var view = this.viewModel[id];
             //console.log('at ' + len + ' removing ' + id);
             view.remove();
+            delete view.$el.prevObject;
             view.model = null;
+            this.viewModel[id] = null;
             delete this.viewModel[id];
             //console.timeEnd('cleaning up views');
         },
@@ -196,6 +198,7 @@ define(['jquery', 'underscore', 'backbone', 'templates', ], function($, _, Backb
         add: function(model) {
             var d = $.Deferred();
             var $tweets = this.$('.tweet');
+            delete $tweets.prevObject;
             if ($tweets.length) {
                 var i, iMax;
                 for (i = 0, iMax = $tweets.length; i < iMax; ++i) {

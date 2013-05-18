@@ -83,10 +83,10 @@ require(['backbone', 'routes/application-router', 'views/application-view', 'col
      */
     app.interval.red = setInterval(function() {
         app.tweets.red.fetch();
-    }, 10000);
+    }, 8000);
     app.interval.blue = setInterval(function() {
         app.tweets.blue.fetch();
-    }, 10000);
+    }, 8000);
 
     /*
      *
