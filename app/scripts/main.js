@@ -23,7 +23,7 @@ require.config({
     }
 });
 
-require(['backbone', 'routes/application-router', 'views/application-view', 'collections/application-collection'], function(Backbone, Router, Views, Collections) {
+require(['underscore', 'backbone', 'routes/application-router', 'views/application-view', 'collections/application-collection'], function(_, Backbone, Router, Views, Collections) {
     var appRouter = new Router();
     var redTweets = new Collections([], {
         hashTag: 'coke'
@@ -107,7 +107,7 @@ require(['backbone', 'routes/application-router', 'views/application-view', 'col
         }
     };
     var $cokebtn = $('.navbar .btn-coke');
-    $cokebtn.on('click', function() {
+    $cokebtn.on('click', _.debounce(function() {
         if ($cokebtn.text() === labels.coke.stop) {
             clearInterval(app.interval.red);
             $cokebtn.text(labels.coke.start);
@@ -118,10 +118,10 @@ require(['backbone', 'routes/application-router', 'views/application-view', 'col
             }, 10000);
             $cokebtn.text(labels.coke.stop);
         }
-    });
+    }, 250, true));
 
     var $pepsibtn = $('.navbar .btn-pepsi');
-    $pepsibtn.on('click', function() {
+    $pepsibtn.on('click', _.debounce(function() {
         if ($pepsibtn.text() === labels.pepsi.stop) {
             clearInterval(app.interval.blue);
             $pepsibtn.text(labels.pepsi.start);
@@ -132,5 +132,5 @@ require(['backbone', 'routes/application-router', 'views/application-view', 'col
             }, 10000);
             $pepsibtn.text(labels.pepsi.stop);
         }
-    });
+    }, 250, true));
 });
