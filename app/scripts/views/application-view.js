@@ -126,13 +126,17 @@ define(['jquery', 'underscore', 'backbone', 'templates', ], function($, _, Backb
          *
          */
         animateInsertion: function($tweets, model) {
+            var classList;
             if ($tweets.length) {
-                var i, iMax;
-                for (i = 0, iMax = $tweets.length; i < iMax; ++i) {
-                    var classList = $tweets[i].classList;
+                var classLists = _.map($tweets, function($tweet) {
+                    // read
+                    return $tweet.classList;
+                });
+                _.each(classLists, function(classList) {
+                    // write
                     classList.remove('slide-down1');
                     classList.remove('animate0');
-                }
+                });
             }
 
             var view = new this.itemView({
@@ -144,15 +148,18 @@ define(['jquery', 'underscore', 'backbone', 'templates', ], function($, _, Backb
             this.viewModel[model.id] = view;
             view.render();
             var fn = function() {
-                    var classList = view.el.classList;
+                    var el = view.el;
+                    classList = el.classList;
                     classList.remove('animate0');
                     classList.remove('reveal-left');
                     classList.remove('reveal-right');
+                    el.removeEventListener('webkitAnimationEnd', fn);
+                    el.removeEventListener('animationend', fn);
                     //console.log(view.el.className);
                 };
             view.el.addEventListener('animationend', fn);
             view.el.addEventListener('webkitAnimationEnd', fn);
-            var classList = view.el.classList;
+            classList = view.el.classList;
             classList.add(this.addClazz);
             classList.add('animate0');
             this.$el.prepend(view.$el);
@@ -200,17 +207,19 @@ define(['jquery', 'underscore', 'backbone', 'templates', ], function($, _, Backb
             var $tweets = this.$('.tweet');
             delete $tweets.prevObject;
             if ($tweets.length) {
-                var i, iMax;
-                for (i = 0, iMax = $tweets.length; i < iMax; ++i) {
-                    var classList = $tweets[i].classList;
+                _.each($tweets, function(tweet) {
+                    var classList = tweet.classList;
                     classList.add('slide-down1');
                     classList.add('animate0');
-                }
+                });
+                var firstTweet = $tweets[0];
                 var fn = function(el) {
+                        firstTweet.removeEventListener('webkitAnimationEnd', fn);
+                        firstTweet.removeEventListener('animationend', fn);
                         d.resolve(el);
                     };
-                $tweets[0].addEventListener('webkitAnimationEnd', fn);
-                $tweets[0].addEventListener('animationend', fn);
+                firstTweet.addEventListener('webkitAnimationEnd', fn);
+                firstTweet.addEventListener('animationend', fn);
             } else {
                 d.resolve();
             }
