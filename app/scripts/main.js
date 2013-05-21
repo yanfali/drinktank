@@ -78,15 +78,16 @@ require(['underscore', 'backbone', 'routes/application-router', 'views/applicati
         app.tweets.blue.fetch();
     }, 0);
 
+    var sleep = 8000;
     /*
-     * Start fetching tweets every 10 seconds
+     * Start fetching tweets every 8 seconds
      */
     app.interval.red = setInterval(function() {
         app.tweets.red.fetch();
-    }, 8000);
+    }, sleep);
     app.interval.blue = setInterval(function() {
         app.tweets.blue.fetch();
-    }, 8000);
+    }, sleep);
 
     /*
      *
@@ -106,31 +107,39 @@ require(['underscore', 'backbone', 'routes/application-router', 'views/applicati
             start: 'Start pepsi'
         }
     };
+    var makeToggleFn = function(opts) {
+            return function() {
+                if (opts.$btn.text() === opts.stop) {
+                    clearInterval(opts.interval);
+                    opts.$btn.text(opts.start);
+                } else {
+                    opts.collection.fetch();
+                    opts.interval = setInterval(function() {
+                        opts.collection.fetch();
+                    }, opts.sleep);
+                    opts.$btn.text(opts.stop);
+                }
+            };
+        };
     var $cokebtn = $('.navbar .btn-coke');
-    $cokebtn.on('click', _.debounce(function() {
-        if ($cokebtn.text() === labels.coke.stop) {
-            clearInterval(app.interval.red);
-            $cokebtn.text(labels.coke.start);
-        } else {
-            app.tweets.red.fetch();
-            app.interval.red = setInterval(function() {
-                app.tweets.red.fetch();
-            }, 10000);
-            $cokebtn.text(labels.coke.stop);
-        }
-    }, 250, true));
+    $cokebtn.on('click', _.debounce(
+    makeToggleFn({
+        interval: app.interval.red,
+        $btn: $cokebtn,
+        collection: app.tweets.red,
+        start: labels.coke.start,
+        stop: labels.coke.stop,
+        sleep: sleep
+    }), 250, true));
 
     var $pepsibtn = $('.navbar .btn-pepsi');
-    $pepsibtn.on('click', _.debounce(function() {
-        if ($pepsibtn.text() === labels.pepsi.stop) {
-            clearInterval(app.interval.blue);
-            $pepsibtn.text(labels.pepsi.start);
-        } else {
-            app.tweets.blue.fetch();
-            app.interval.blue = setInterval(function() {
-                app.tweets.blue.fetch();
-            }, 10000);
-            $pepsibtn.text(labels.pepsi.stop);
-        }
-    }, 250, true));
+    $pepsibtn.on('click', _.debounce(
+    makeToggleFn({
+        interval: app.interval.blue,
+        $btn: $pepsibtn,
+        collection: app.tweets.blue,
+        start: labels.pepsi.start,
+        stop: labels.pepsi.stop,
+        sleep: sleep
+    }), 250, true));
 });
